@@ -7,7 +7,7 @@ import {
   Typography,
   Container,
 } from "@mui/material/";
-import FormInput from "../../components/formInput";
+import FormInput from "../../components/inputs/formInput";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import * as _ from "lodash";

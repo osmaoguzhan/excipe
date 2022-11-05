@@ -1,4 +1,4 @@
-import Constants from "./Constants";
+import Constants from "./constants";
 import Messages from "./messages";
 
 const Validator = () => {
