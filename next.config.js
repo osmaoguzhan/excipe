@@ -15,7 +15,7 @@ const nextConfig = {
     DATABASE_URL: process.env.DATABASE_URL,
     ENDPOINT: process.env.ENDPOINT,
     TOKEN: process.env.TOKEN,
-    SECRET: process.env.JWT_SECRET,
+    SECRET: process.env.SECRET,
   },
 };
 
