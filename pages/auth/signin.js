@@ -26,26 +26,28 @@ const SignIn = () => {
 
   const onSubmit = async (data) => {
     setLoading(true);
-    const response = await signIn("credentials", {
+    signIn("credentials", {
       email: data.email,
       password: data.password,
       redirect: false,
-    });
-    if (response?.error) {
-      Swal.fire({
-        title: "Error!",
-        text: response.error,
-        icon: "error",
-        confirmButtonText: "OK",
+    })
+      .catch((err) => {
+        Swal.fire({
+          title: "Error!",
+          text: err.error,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+        reset(
+          {},
+          {
+            keepValues: false,
+          }
+        );
+      })
+      .finally(() => {
+        setLoading(false);
       });
-      reset(
-        {},
-        {
-          keepValues: false,
-        }
-      );
-    }
-    setLoading(false);
   };
 
   useEffect(() => {

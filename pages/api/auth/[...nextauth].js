@@ -12,26 +12,21 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {},
-      async authorize(credentials, req) {
-        try {
-          let { email, password } = credentials;
-          let user = await prisma.user.findFirst({
-            where: {
-              email: email,
-            },
-          });
-          let match = await bcrypt.compare(password, user.password);
-          if (!user || !match)
-            throw new Error("Please check your credentials.");
-          user = exclude(user, ["password", "role", "createdAt", "updatedAt"]);
-          return user;
-        } finally {
-          prisma.$disconnect();
-        }
+      async authorize(credentials) {
+        let { email, password } = credentials;
+        let user = await prisma.user.findFirst({
+          where: {
+            email: email,
+          },
+        });
+        let match = await bcrypt.compare(password, user.password);
+        if (!user || !match) throw new Error("Please check your credentials.");
+        user = exclude(user, ["password", "role", "createdAt", "updatedAt"]);
+        return user;
       },
     }),
   ],
-  secret: process.env.SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/auth/signin",
   },

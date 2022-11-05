@@ -27,7 +27,7 @@ const SignUp = () => {
 
   const onSubmit = async (formData) => {
     formData.password = await bcrypt.hash(formData.password, 10);
-    await fetch("/api/signup", {
+    fetch("/api/signup", {
       headers: {
         "Content-Type": "application/json",
       },

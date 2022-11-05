@@ -15,8 +15,7 @@ export default async function handler(req, res) {
       res.statusCode = 200;
       res.json({ name, surname, email });
     } catch (err) {
-      throw Error("Error while creating the user.");
+      throw new Error("Error while creating the user.");
     }
-  } else {
   }
 }

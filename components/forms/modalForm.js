@@ -22,9 +22,6 @@ const ModalForm = (props) => {
   } = props;
   const { handleSubmit, control, reset } = useForm();
   const [date, setDate] = useState();
-  console.log("====================================");
-  console.log(date);
-  console.log("====================================");
 
   const handleCloseExtra = () => {
     handleClose();
@@ -44,7 +41,7 @@ const ModalForm = (props) => {
           <Grid item>
             <FormInput
               label={"Ingredient"}
-              name={"ingredient"}
+              name={"name"}
               style={{ width: "30em" }}
               multiline={true}
               control={control}

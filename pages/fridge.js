@@ -12,35 +12,36 @@ import * as _ from "lodash";
 import Swal from "sweetalert2";
 import ModalForm from "../components/forms/modalForm";
 import { Add, Delete, Edit } from "@mui/icons-material";
+import { useSession, getSession } from "next-auth/react";
+import prisma from "../lib/prisma";
 // import Constants from "../utils/constants";
 
 const columns = [
   {
     field: "id",
     headerName: "ID",
-    width: 100,
+    width: 250,
   },
   {
-    field: "content",
-    headerName: "Content",
+    field: "name",
+    headerName: "Ingredient",
     width: 250,
     editable: false,
   },
   {
-    field: "status",
-    headerName: "Status",
+    field: "expiryDate",
+    headerName: "Expiry Date",
     width: 250,
     editable: false,
   },
 ];
 
-const Fridge = () => {
+const Fridge = ({ ingredients }) => {
   const [isLoading, setLoading] = useState(false);
-  // const api = ApiService();
-  const [rows, setRows] = useState([]);
-  // const { t } = useTranslation();
+  const [rows, setRows] = useState(ingredients);
   const [isOpen, setOpen] = useState(false);
-  const [selectedRows, setSelectedRows] = React.useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const { data: session } = useSession();
 
   const checkError = (err) => {
     if (!_.isNil(err?.response?.data?.message)) {
@@ -84,26 +85,36 @@ const Fridge = () => {
     //   .finally(() => setLoading(false));
   };
 
-  const addIngredient = (data) => {
+  const addIngredient = async (data) => {
     setLoading(true);
-    console.log("====================================");
-    console.log(data);
-    console.log("====================================");
-    setLoading(false);
-    // let postData = {};
-    // postData.content = data.content;
-    // postData.status = Constants.statusList.TODO;
-    // api
-    //   .addTodoItem(postData)
-    //   .then(async (res) => {
-    //     setOpen(false);
-    //     await getTodoList();
-    //     createSuccess(res);
-    //   })
-    //   .catch((err) => {
-    //     checkError(err);
-    //     setLoading(false);
-    //   });
+    data.email = session.user.email;
+    fetch("/api/ingredient", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(data),
+    })
+      .then((res) => {
+        Swal.fire({
+          title: "Success!",
+          text: "Added",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      })
+      .catch((err) => {
+        Swal.fire({
+          title: "Error!",
+          text: err.error,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+        setOpen(false);
+      });
   };
 
   const deleteItem = () => {
@@ -126,7 +137,7 @@ const Fridge = () => {
 
   const init = useCallback(() => {
     setLoading(true);
-    getTodoList();
+    // getTodoList();
     setLoading(false);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -194,6 +205,15 @@ const Fridge = () => {
       />
     </Container>
   );
+};
+
+export const getServerSideProps = async () => {
+  const ingredients = await prisma.ingredient.findMany();
+  return {
+    props: {
+      ingredients: ingredients,
+    },
+  };
 };
 
 export default Fridge;
