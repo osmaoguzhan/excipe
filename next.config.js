@@ -16,6 +16,7 @@ const nextConfig = {
     ENDPOINT: process.env.ENDPOINT,
     TOKEN: process.env.TOKEN,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   },
 };
 

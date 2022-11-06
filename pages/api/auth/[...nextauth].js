@@ -8,6 +8,7 @@ export const authOptions = {
   session: {
     strategy: "jwt",
   },
+  site: process.env.NEXTAUTH_URL,
   providers: [
     CredentialsProvider({
       name: "Credentials",
