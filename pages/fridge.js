@@ -12,8 +12,9 @@ import * as _ from "lodash";
 import Swal from "sweetalert2";
 import ModalForm from "../components/forms/modalForm";
 import { Add, Delete, Edit } from "@mui/icons-material";
-import { useSession, getSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import prisma from "../lib/prisma";
+import { requireAuth } from "../utils/requireAuth";
 // import Constants from "../utils/constants";
 
 const columns = [
@@ -36,12 +37,11 @@ const columns = [
   },
 ];
 
-const Fridge = ({ ingredients }) => {
+const Fridge = ({ ingredients, session }) => {
   const [isLoading, setLoading] = useState(false);
   const [rows, setRows] = useState(ingredients);
   const [isOpen, setOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
-  const { data: session } = useSession();
 
   const checkError = (err) => {
     if (!_.isNil(err?.response?.data?.message)) {
@@ -87,7 +87,7 @@ const Fridge = ({ ingredients }) => {
 
   const addIngredient = async (data) => {
     setLoading(true);
-    data.email = session.user.email;
+    data.id = session._id;
     fetch("/api/ingredient", {
       headers: {
         "Content-Type": "application/json",
@@ -207,13 +207,16 @@ const Fridge = ({ ingredients }) => {
   );
 };
 
-export const getServerSideProps = async () => {
+export const getServerSideProps = async (ctx) => {
   const ingredients = await prisma.ingredient.findMany();
-  return {
-    props: {
-      ingredients: ingredients,
-    },
-  };
+  return requireAuth(ctx, (session) => {
+    return {
+      props: {
+        session: session,
+        ingredients: ingredients,
+      },
+    };
+  });
 };
 
 export default Fridge;

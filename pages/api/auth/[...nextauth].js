@@ -20,14 +20,25 @@ export const authOptions = {
             email: email,
           },
         });
+        if (!user) throw new Error("Please check your credentials.");
         let match = await bcrypt.compare(password, user.password);
-        if (!user || !match) throw new Error("Please check your credentials.");
+        if (!match) throw new Error("Please check your credentials.");
         user = exclude(user, ["password", "role", "createdAt", "updatedAt"]);
         return user;
       },
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async session({ session }) {
+      let sessionUser = await prisma.user.findFirst({
+        where: {
+          email: session.email,
+        },
+      });
+      session._id = sessionUser.id;
+      return session;
+    },
+  },
   pages: {
     signIn: "/auth/signin",
   },

@@ -11,8 +11,8 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import RamenDiningIcon from "@mui/icons-material/RamenDining";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useState } from "react";
+import { signOut, useSession } from "next-auth/react";
 import { useLoading } from "../contexts/loadingContext";
 
 const pages = {
@@ -48,169 +48,148 @@ const Navbar = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("====================================");
-    console.log(session);
-    console.log("====================================");
-    if (
-      !session &&
-      status === "unauthenticated" &&
-      router.pathname !== "/auth/signin" &&
-      router.pathname !== "/auth/signup"
-    ) {
-      console.log("====================================");
-      console.log("werwerwe");
-      console.log("====================================");
-      signIn();
-    }
-  }, [status]);
-
   return (
-    <AppBar
-      position='static'
-      style={{ color: "black", backgroundColor: "#8b9787" }}>
-      <Container maxWidth='xl'>
-        <Toolbar disableGutters>
-          <RamenDiningIcon sx={{ display: { xs: "none", md: "flex" } }} />
-          <Typography
-            variant='h6'
-            noWrap
-            component='a'
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}>
-            EXCIPE
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size='large'
-              aria-label='account of current user'
-              aria-controls='menu-appbar'
-              aria-haspopup='true'
-              onClick={handleOpenNavMenu}
-              color='inherit'>
-              <MenuIcon />
-            </IconButton>
-            {status !== "authenticated" ? (
-              <></>
-            ) : (
-              <Menu
-                id='menu-appbar'
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={{
-                  display: { xs: "block", md: "none" },
-                }}>
-                {Object.keys(pages).map((page) => (
-                  <MenuItem
-                    hidden={!session}
-                    key={page}
-                    onClick={handleCloseNavMenu}>
-                    {page}
-                  </MenuItem>
-                ))}
-              </Menu>
-            )}
-          </Box>
-          <RamenDiningIcon
-            sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
-          />
-          <Typography
-            variant='h5'
-            noWrap
-            component='a'
-            href=''
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}>
-            EXCIPE
-          </Typography>
-          {status === "unauthenticated" ? (
-            <></>
-          ) : (
-            <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-              {Object.keys(pages).map((page) => (
-                <Button
-                  key={page}
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: "white", display: "block" }}>
-                  {page}
-                </Button>
-              ))}
-            </Box>
-          )}
-
-          <Box sx={{ flexGrow: 0 }}>
-            {status === "unauthenticated" ? (
-              <></>
-            ) : (
-              <>
-                <Tooltip title='Open settings'>
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Box
-                      style={{
-                        borderRadius: "50%",
-                        width: "48px",
-                        height: "48px",
-                        backgroundColor: "gray",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}>
-                      {session?.user?.name.charAt(0)}
-                    </Box>
-                  </IconButton>
-                </Tooltip>
+    session && (
+      <AppBar
+        position='static'
+        style={{ color: "black", backgroundColor: "#8b9787" }}>
+        <Container maxWidth='xl'>
+          <Toolbar disableGutters>
+            <RamenDiningIcon sx={{ display: { xs: "none", md: "flex" } }} />
+            <Typography
+              variant='h6'
+              noWrap
+              component='a'
+              sx={{
+                mr: 2,
+                display: { xs: "none", md: "flex" },
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+              }}>
+              EXCIPE
+            </Typography>
+            <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+              <IconButton
+                size='large'
+                aria-label='account of current user'
+                aria-controls='menu-appbar'
+                aria-haspopup='true'
+                onClick={handleOpenNavMenu}
+                color='inherit'>
+                <MenuIcon />
+              </IconButton>
+              {status !== "authenticated" ? (
+                <></>
+              ) : (
                 <Menu
-                  sx={{ mt: "45px" }}
                   id='menu-appbar'
-                  anchorEl={anchorElUser}
+                  anchorEl={anchorElNav}
                   anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
+                    vertical: "bottom",
+                    horizontal: "left",
                   }}
                   keepMounted
                   transformOrigin={{
                     vertical: "top",
-                    horizontal: "right",
+                    horizontal: "left",
                   }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}>
-                  {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography textAlign='center'>{setting}</Typography>
+                  open={Boolean(anchorElNav)}
+                  onClose={handleCloseNavMenu}
+                  sx={{
+                    display: { xs: "block", md: "none" },
+                  }}>
+                  {Object.keys(pages).map((page) => (
+                    <MenuItem
+                      hidden={!session}
+                      key={page}
+                      onClick={handleCloseNavMenu}>
+                      {page}
                     </MenuItem>
                   ))}
                 </Menu>
-              </>
+              )}
+            </Box>
+            <RamenDiningIcon
+              sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
+            />
+            <Typography
+              variant='h5'
+              noWrap
+              component='a'
+              href=''
+              sx={{
+                mr: 2,
+                display: { xs: "flex", md: "none" },
+                flexGrow: 1,
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+              }}>
+              EXCIPE
+            </Typography>
+            {status === "unauthenticated" ? (
+              <></>
+            ) : (
+              <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+                {Object.keys(pages).map((page) => (
+                  <Button
+                    key={page}
+                    onClick={handleCloseNavMenu}
+                    sx={{ my: 2, color: "white", display: "block" }}>
+                    {page}
+                  </Button>
+                ))}
+              </Box>
             )}
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title='Open settings'>
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Box
+                    style={{
+                      borderRadius: "50%",
+                      width: "48px",
+                      height: "48px",
+                      backgroundColor: "gray",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}>
+                    {session?.user?.name.charAt(0)}
+                  </Box>
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id='menu-appbar'
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}>
+                {settings.map((setting) => (
+                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                    <Typography textAlign='center'>{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+    )
   );
 };
 export default Navbar;

@@ -19,10 +19,11 @@ const FormInput = (props) => {
       control={control}
       render={(props) => (
         <TextField
+          margin='normal'
+          fullWidth
           name={name}
           label={label}
           error={!!(errors && setError())}
-          disabled={false}
           type={type ? type : "text"}
           onChange={(e) => {
             if (
@@ -34,7 +35,6 @@ const FormInput = (props) => {
           }}
           helperText={errors && setError()}
           value={props.field.value}
-          fullWidth
           {...other}
         />
       )}

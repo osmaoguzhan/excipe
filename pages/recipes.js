@@ -16,6 +16,7 @@ import { RECIPES } from "../graphql/queries";
 import useArray from "../hooks/useArray";
 import useToggle from "../hooks/useToggle";
 import { useLoading } from "../contexts/loadingContext";
+import { requireAuth } from "../utils/requireAuth";
 
 const Recipes = () => {
   const { array, push, remove } = useArray([]);
@@ -104,7 +105,12 @@ const Recipes = () => {
             onChange={(e) => setValue(e.target.value)}
           />
         </Grid>
-        <Grid item xs={1} display='flex' justifyContent={"flex-start"}>
+        <Grid
+          item
+          xs={1}
+          display='flex'
+          justifyContent={"flex-start"}
+          md={"auto"}>
           <Fab
             color='primary'
             disabled={value.length < 2}
@@ -144,6 +150,16 @@ const Recipes = () => {
       </Drawer>
     </>
   );
+};
+
+export const getServerSideProps = async (ctx) => {
+  return requireAuth(ctx, () => {
+    return {
+      props: {
+        data: null,
+      },
+    };
+  });
 };
 
 export default Recipes;

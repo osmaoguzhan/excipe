@@ -2,16 +2,8 @@ import prisma from "../../lib/prisma";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { name, expiryDate, email } = req.body;
+    const { name, expiryDate, id } = req.body;
     try {
-      let { id } = await prisma.user.findFirst({
-        where: {
-          email: email,
-        },
-        select: {
-          id: true,
-        },
-      });
       const addedIngredient = await prisma.ingredient.create({
         data: {
           name,
