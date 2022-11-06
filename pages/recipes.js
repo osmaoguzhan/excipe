@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import TextField from "@mui/material/TextField";
 import Drawer from "@mui/material/Drawer";
@@ -6,6 +6,7 @@ import Badge from "@mui/material/Badge";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import Fab from "@mui/material/Fab";
 import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
 import List from "../components/list";
 import RecipeReviewCard from "../components/card";
 import Loading from "../components/loading";
@@ -17,6 +18,9 @@ import useArray from "../hooks/useArray";
 import useToggle from "../hooks/useToggle";
 import { useLoading } from "../contexts/loadingContext";
 import { requireAuth } from "../utils/requireAuth";
+import _ from "lodash";
+import { Button } from "@mui/material";
+import { ArrowDownward } from "@mui/icons-material";
 
 const Recipes = () => {
   const { array, push, remove } = useArray([]);
@@ -24,10 +28,18 @@ const Recipes = () => {
   const [value, setValue] = useState("");
   const [recipes, setRecipes] = useState([]);
   const { loading, setLoading } = useLoading();
+  const [pageInfo, setPageInfo] = useState({
+    endCursor: "YXJyYXljb25uZWN0aW9uOjEw=",
+    hasNextPage: true,
+  });
 
   const handleClick = async (e) => {
     e.preventDefault();
     setValue("");
+    setPageInfo({
+      endCursor: "YXJyYXljb25uZWN0aW9uOjEw=",
+      hasNextPage: true,
+    });
     if (array.find((x) => value.toLowerCase() === x.toLowerCase())) {
       Swal.fire({
         title: "Error!",
@@ -42,32 +54,41 @@ const Recipes = () => {
 
   const deleteIngredient = async (e, ingredient) => {
     if (array.length === 1) {
-      toggleDrawer(false);
       setRecipes([]);
     }
     remove(array.indexOf(ingredient));
   };
 
-  useEffect(() => {
-    async function get() {
-      setLoading(true);
-      if (array.length > 0) {
-        const variables = {
-          listOfIngredients: array,
-        };
-        const data = await graphqlClient.request(
-          RECIPES,
-          JSON.stringify(variables)
-        );
-        let newRecipes = data?.searchRecipesByIngredients?.edges.map(
-          (recipe) => recipe.node
-        );
+  const getRecipes = async () => {
+    if (array.length > 0) {
+      const variables = {
+        list: array,
+        after: pageInfo.endCursor,
+      };
+      const data = await graphqlClient.request(
+        RECIPES,
+        JSON.stringify(variables)
+      );
+      let newRecipes = data?.searchRecipesByIngredients?.edges.map(
+        (recipe) => recipe.node
+      );
+      if (scroll) {
+        setRecipes((prev) => [...prev, ...newRecipes]);
+      } else {
         setRecipes(newRecipes);
       }
-      setLoading(false);
+      setPageInfo((prev) => {
+        return { ...prev, ...data?.searchRecipesByIngredients.pageInfo };
+      });
     }
-    get();
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    getRecipes();
   }, [array]);
+
   return loading ? (
     <Loading />
   ) : (
@@ -122,20 +143,33 @@ const Recipes = () => {
         </Grid>
       </Grid>
       <Grid
+        item
         container
         marginTop={"10px"}
         style={{
           display: "flex",
-          justifyContent: "space-around",
+          justifyContent: "flex-start",
         }}>
         {recipes.length > 0 ? (
           recipes.map((recipe) => {
             return <RecipeReviewCard key={uuidv4()} recipe={recipe} />;
           })
         ) : (
-          <div>No recipe</div>
+          <div style={{ marginLeft: "50%" }}>No recipe</div>
         )}
       </Grid>
+      <Button
+        style={{
+          bottom: "100%",
+          left: "50%",
+          display: array.length > 0 ? "flex" : "none",
+          justifyContent: "center",
+          marginTop: "15px",
+        }}
+        onClick={() => getRecipes()}
+        variant='outlined'>
+        Load More
+      </Button>
       <Drawer
         anchor={"left"}
         open={drawerState}

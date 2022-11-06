@@ -17,7 +17,6 @@ const urls = [
   "https://media.giphy.com/media/xtgZt3jZelFqU/giphy.gif",
   "https://media.giphy.com/media/7fwBcr9lB0Fos/giphy.gif",
   "https://media.giphy.com/media/lGbz7CsaCj4Tm/giphy.gif",
-  "https://media.giphy.com/media/ILaw22zepNW45T4in0/giphy.gif",
   "https://media.giphy.com/media/3o7P4F86TAI9Kz7XYk/giphy.gif",
 ];
 

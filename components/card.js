@@ -73,6 +73,7 @@ export default function RecipeReviewCard({ recipe }) {
         backgroundColor: "#e8e7e6",
         cursor: "pointer",
         borderRadius: "5px",
+        marginLeft: "15px",
         ...mouseAction,
       }}
       onMouseOver={() =>

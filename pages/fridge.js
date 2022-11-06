@@ -208,8 +208,12 @@ const Fridge = ({ ingredients, session }) => {
 };
 
 export const getServerSideProps = async (ctx) => {
-  const ingredients = await prisma.ingredient.findMany();
-  return requireAuth(ctx, (session) => {
+  return requireAuth(ctx, async (session) => {
+    const ingredients = await prisma.ingredient.findMany({
+      where: {
+        userId: session._id,
+      },
+    });
     return {
       props: {
         session: session,

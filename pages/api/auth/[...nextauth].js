@@ -15,7 +15,7 @@ export const authOptions = {
       credentials: {},
       async authorize(credentials) {
         let { email, password } = credentials;
-        let user = await prisma.user.findFirst({
+        let user = await prisma.user.findUnique({
           where: {
             email: email,
           },
@@ -30,9 +30,9 @@ export const authOptions = {
   ],
   callbacks: {
     async session({ session }) {
-      let sessionUser = await prisma.user.findFirst({
+      let sessionUser = await prisma.user.findUnique({
         where: {
-          email: session.email,
+          email: session.user.email,
         },
       });
       session._id = sessionUser.id;
