@@ -6,7 +6,6 @@ import {
   Button,
   CssBaseline,
 } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import FormInput from "../../components/inputs/formInput";
 import Validator from "../../utils/validator";
@@ -18,7 +17,7 @@ import Avatar from "@mui/material/Avatar";
 import Paper from "@mui/material/Paper";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { getSession } from "next-auth/react";
-const theme = createTheme();
+import Head from "next/head";
 
 const urls = [
   "https://media.giphy.com/media/SZQBPO4NqHkh6wmdXk/giphy.gif",
@@ -68,7 +67,11 @@ const SignUp = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
+      <Head>
+        <title>Sign Up</title>
+        <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+      </Head>
       <Grid container component='main' sx={{ height: "100vh" }}>
         <CssBaseline />
         <Grid
@@ -156,7 +159,7 @@ const SignUp = () => {
           </Box>
         </Grid>
       </Grid>
-    </ThemeProvider>
+    </>
   );
 };
 export const getServerSideProps = async (ctx) => {

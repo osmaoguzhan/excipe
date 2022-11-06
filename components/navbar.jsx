@@ -16,7 +16,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useLoading } from "../contexts/loadingContext";
 
 const pages = {
-  "Your Fridge": "/fridge",
+  "My Fridge": "/fridge",
   Recipes: "/recipes",
 };
 const settings = ["Profile", "Logout"];
@@ -37,6 +37,7 @@ const Navbar = () => {
 
   const handleCloseNavMenu = (e) => {
     setAnchorElNav(null);
+    setLoading(true);
     router.replace(pages[e.target.textContent]);
   };
 
