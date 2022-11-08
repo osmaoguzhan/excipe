@@ -1,7 +1,6 @@
-import Navbar from "../components/navbar";
-import "../styles/global.css";
+import Navbar from "@/components/navbar";
 import { SessionProvider } from "next-auth/react";
-import { LoadingProvider } from "../contexts/loadingContext";
+import { LoadingProvider } from "@/contexts/loadingContext";
 
 function App({ Component, pageProps }) {
   return (

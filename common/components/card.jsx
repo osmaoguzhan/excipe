@@ -9,7 +9,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useState } from "react";
 import Swal from "sweetalert2";
 
-export default function RecipeReviewCard({ recipe }) {
+const RecipeReviewCard = ({ recipe }) => {
   const [mouseAction, setMouseAction] = useState({
     boxShadow: "",
   });
@@ -73,7 +73,7 @@ export default function RecipeReviewCard({ recipe }) {
         backgroundColor: "#e8e7e6",
         cursor: "pointer",
         borderRadius: "5px",
-        marginLeft: "15px",
+        // marginLeft: "30px",
         ...mouseAction,
       }}
       onMouseOver={() =>
@@ -101,4 +101,6 @@ export default function RecipeReviewCard({ recipe }) {
       </CardContent>
     </Card>
   );
-}
+};
+
+export default RecipeReviewCard;

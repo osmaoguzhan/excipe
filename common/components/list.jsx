@@ -1,8 +1,6 @@
-import Grid from "@mui/material/Grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveIcon from "@mui/icons-material/Remove";
-import Paper from "@mui/material/Paper";
-import Stack from "@mui/material/Stack";
+import { Stack, Grid, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { v4 as uuidv4 } from "uuid";
 
@@ -36,7 +34,13 @@ const List = ({ ingredientList, deleteIngredient }) => {
                   }}
                 />
               </Grid>
-              <Grid xs={8} item className={"dancingScript"}>
+              <Grid
+                xs={8}
+                item
+                style={{
+                  fontSize: "30px",
+                  fontFamily: "Brush Script MT, cursive",
+                }}>
                 {ingredient}
               </Grid>
               <Grid

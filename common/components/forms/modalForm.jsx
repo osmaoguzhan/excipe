@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import FormInput from "../inputs/formInput";
-import moment from "moment/moment";
 
 const ModalForm = (props) => {
   const {
@@ -22,16 +21,6 @@ const ModalForm = (props) => {
   } = props;
   const { handleSubmit, control, reset } = useForm();
   const [date, setDate] = useState();
-
-  const handleCloseExtra = () => {
-    handleClose();
-    reset(
-      {},
-      {
-        keepValues: false,
-      }
-    );
-  };
 
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -59,7 +48,7 @@ const ModalForm = (props) => {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCloseExtra}>{cancel}</Button>
+        <Button onClick={handleClose}>{cancel}</Button>
         <Button onClick={handleSubmit((d) => handleCustomSubmit(d))}>
           {custom}
         </Button>

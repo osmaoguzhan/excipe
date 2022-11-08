@@ -1,4 +1,7 @@
-import prisma from "../../lib/prisma";
+import prisma from "@/lib/prisma";
+import { exclude } from "@/utils/helpers";
+import moment from "moment";
+exclude;
 
 export default async function handler(req, res) {
   switch (req.method) {
@@ -24,11 +27,20 @@ export default async function handler(req, res) {
     case "GET":
       try {
         const { userid } = req.headers;
-        const ingredients = await prisma.ingredient.findMany({
+        let ingredients = await prisma.ingredient.findMany({
           where: {
             userId: userid,
           },
         });
+        if (ingredients) {
+          let today = new Date();
+          ingredients.forEach((ingredient) => {
+            let diff = moment(ingredient.expiryDate).diff(today, "days");
+            ingredient.status =
+              diff > 3 ? "Fresh" : diff > 0 ? "Stale" : "Expired";
+          });
+        }
+        ingredients = exclude(ingredients, ["userId"]);
         res.status(200).json({ success: true, data: ingredients });
       } catch (err) {
         res.status(400).json({

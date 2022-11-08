@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/components/*": ["./common/components/*"],
+      "@/contexts/*": ["./common/contexts/*"],
+      "@/graphql/*": ["./common/graphql/*"],
+      "@/hooks/*": ["./common/hooks/*"],
+      "@/lib/*": ["./common/lib/*"],
+      "@/utils/*": ["./common/utils/*"]
+    }
+  }
+}

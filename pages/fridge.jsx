@@ -1,40 +1,50 @@
-import * as React from "react";
-import { DataGrid } from "@mui/x-data-grid";
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  CircularProgress,
-  Container,
-} from "@mui/material";
 import { useState } from "react";
+import Head from "next/head";
 import * as _ from "lodash";
 import Swal from "sweetalert2";
-import ModalForm from "../components/forms/modalForm";
+import moment from "moment";
+import { DataGrid } from "@mui/x-data-grid";
+import { Box, Button, ButtonGroup, Container, lighten } from "@mui/material";
 import { Add, Delete, Edit } from "@mui/icons-material";
-import prisma from "../lib/prisma";
-import { requireAuth } from "../utils/requireAuth";
-import useArray from "../hooks/useArray";
-import { useLoading } from "../contexts/loadingContext";
-import Head from "next/head";
+import ModalForm from "@/components/forms/modalForm";
+import prisma from "@/lib/prisma";
+import { requireAuth } from "@/utils/requireAuth";
+import useArray from "@/hooks/useArray";
+import { useLoading } from "@/contexts/loadingContext";
+import Loading from "@/components/loading";
+import { exclude } from "@/utils/helpers";
 
 const columns = [
   {
     field: "id",
     headerName: "ID",
     width: 250,
+    align: "center",
+    headerAlign: "center",
   },
   {
     field: "name",
     headerName: "Ingredient",
-    width: 250,
+    width: 300,
     editable: false,
+    align: "center",
+    headerAlign: "center",
   },
   {
     field: "expiryDate",
     headerName: "Expiry Date",
-    width: 250,
+    width: 275,
     editable: false,
+    align: "center",
+    headerAlign: "center",
+  },
+  {
+    field: "status",
+    headerName: "Status",
+    width: 275,
+    editable: false,
+    align: "center",
+    headerAlign: "center",
   },
 ];
 
@@ -139,16 +149,7 @@ const Fridge = ({ ingredients, session }) => {
         <meta name='viewport' content='initial-scale=1.0, width=device-width' />
       </Head>
       {isLoading ? (
-        <Box
-          sx={{
-            marginTop: 50,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}>
-          {" "}
-          <CircularProgress />
-        </Box>
+        <Loading />
       ) : (
         <Container
           maxWidth='lg'
@@ -169,19 +170,39 @@ const Fridge = ({ ingredients, session }) => {
               </Button>
             )}
           </ButtonGroup>
-          <Box sx={{ height: 350, width: 1, mb: 2 }} style={{ paddingTop: 5 }}>
+          <Box
+            sx={{
+              height: "631px",
+              width: "100%",
+              mb: 2,
+              paddingTop: 0.5,
+              "& .theme-status-Fresh": {
+                bgcolor: "#68cc7c",
+                "&:hover": {
+                  bgcolor: () => lighten("#68cc7c", 0.5),
+                },
+              },
+              "& .theme-status-Expired": {
+                bgcolor: "#ff4f4f",
+                "&:hover": {
+                  bgcolor: () => lighten("#ff4f4f", 0.5),
+                },
+              },
+              "& .theme-status-Stale": {
+                bgcolor: "#f7d272",
+                "&:hover": {
+                  bgcolor: () => lighten("#f7d272", 0.5),
+                },
+              },
+            }}>
             <DataGrid
+              getRowClassName={(params) => `theme-status-${params.row.status}`}
               rows={rows.value}
               columns={columns}
               pageSize={10}
               rowsPerPageOptions={[10]}
               checkboxSelection
-              disableSelectionOnClick
-              components={{}}
               onSelectionModelChange={(ids) => {
-                console.log("====================================");
-                console.log(ids);
-                console.log("====================================");
                 const selectedIDs = new Set(ids);
                 const selected = rows.value.filter((row) =>
                   selectedIDs.has(row.id)
@@ -209,11 +230,19 @@ const Fridge = ({ ingredients, session }) => {
 
 export const getServerSideProps = async (ctx) => {
   return requireAuth(ctx, async (session) => {
-    const ingredients = await prisma.ingredient.findMany({
+    let ingredients = await prisma.ingredient.findMany({
       where: {
         userId: session._id,
       },
     });
+    if (ingredients) {
+      let today = new Date();
+      ingredients.forEach((ingredient) => {
+        let diff = moment(ingredient.expiryDate).diff(today, "days");
+        ingredient.status = diff > 3 ? "Fresh" : diff > 0 ? "Stale" : "Expired";
+      });
+    }
+    ingredients = exclude(ingredients, ["userId"]);
     return {
       props: {
         session: session,

@@ -1,32 +1,34 @@
 import { useState } from "react";
 
-export default function useArray(defaultValue) {
+const useArray = (defaultValue) => {
   const [value, setValue] = useState(defaultValue);
 
-  function push(element) {
+  const push = (element) => {
     setValue((a) => [...a, element]);
-  }
+  };
 
-  function remove(index) {
+  const remove = (index) => {
     setValue((a) => [...a.slice(0, index), ...a.slice(index + 1, a.length)]);
-  }
+  };
 
-  function clear() {
+  const clear = () => {
     setValue([]);
-  }
+  };
 
-  function length() {
+  const length = () => {
     return value.length;
-  }
+  };
 
-  function isEmpty() {
+  const isEmpty = () => {
     return value.length === 0;
-  }
+  };
 
-  function reset(data) {
+  const reset = (data) => {
     setValue([]);
     setValue(data);
-  }
+  };
 
   return { value, push, remove, clear, length, isEmpty, reset };
-}
+};
+
+export default useArray;

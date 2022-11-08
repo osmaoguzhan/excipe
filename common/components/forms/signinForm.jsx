@@ -1,9 +1,8 @@
-import * as React from "react";
 import { Button, CssBaseline, Grid, Box, Typography } from "@mui/material/";
 import Avatar from "@mui/material/Avatar";
 import Paper from "@mui/material/Paper";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import FormInput from "../inputs/formInput";
+import FormInput from "@/components/inputs/formInput";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 

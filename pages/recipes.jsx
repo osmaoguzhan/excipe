@@ -1,25 +1,20 @@
 import { useEffect, useState } from "react";
-import AddIcon from "@mui/icons-material/Add";
-import TextField from "@mui/material/TextField";
-import Drawer from "@mui/material/Drawer";
-import Badge from "@mui/material/Badge";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import Fab from "@mui/material/Fab";
-import Grid from "@mui/material/Grid";
-import List from "../components/list";
-import RecipeReviewCard from "../components/card";
-import Loading from "../components/loading";
+import Head from "next/head";
 import Swal from "sweetalert2";
 import { v4 as uuidv4 } from "uuid";
-import graphqlClient from "../graphql/graphqlClient";
-import { RECIPES } from "../graphql/queries";
-import useArray from "../hooks/useArray";
-import useToggle from "../hooks/useToggle";
-import { useLoading } from "../contexts/loadingContext";
-import { requireAuth } from "../utils/requireAuth";
 import _ from "lodash";
-import { Button } from "@mui/material";
-import Head from "next/head";
+import { Button, Drawer, Badge, Fab, Grid, TextField } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import List from "@/components/list";
+import RecipeReviewCard from "@/components/card";
+import Loading from "@/components/loading";
+import graphqlClient from "@/graphql/graphqlClient";
+import { RECIPES } from "@/graphql/queries";
+import useArray from "@/hooks/useArray";
+import useToggle from "@/hooks/useToggle";
+import { useLoading } from "@/contexts/loadingContext";
+import { requireAuth } from "@/utils/requireAuth";
 
 const Recipes = () => {
   const ingredients = useArray([]);
@@ -133,12 +128,7 @@ const Recipes = () => {
                 onChange={(e) => setValue(e.target.value)}
               />
             </Grid>
-            <Grid
-              item
-              xs={1}
-              display='flex'
-              justifyContent={"flex-start"}
-              md={"auto"}>
+            <Grid item xs={1} color='red' md={"auto"}>
               <Fab
                 color='primary'
                 disabled={value.length < 2}
@@ -153,24 +143,30 @@ const Recipes = () => {
             item
             container
             marginTop={"10px"}
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-            }}>
+            display='flex'
+            justifyContent='space-evenly'>
             {recipes.length > 0 ? (
               recipes.map((recipe) => {
                 return <RecipeReviewCard key={uuidv4()} recipe={recipe} />;
               })
             ) : (
-              <div style={{ marginLeft: "50%" }}>No recipe</div>
+              <div
+                style={{
+                  display: "flex",
+                  position: "relative",
+                  textAlign: "center",
+                  marginTop: "15px",
+                }}>
+                No recipe
+              </div>
             )}
           </Grid>
           <Button
             style={{
-              bottom: "100%",
-              left: "50%",
               display: ingredients.length() > 0 ? "flex" : "none",
-              justifyContent: "center",
+              position: "relative",
+              textAlign: "center",
+              margin: "auto",
               marginTop: "15px",
             }}
             onClick={() => getRecipes()}

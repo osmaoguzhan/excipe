@@ -37,8 +37,10 @@ const Navbar = () => {
 
   const handleCloseNavMenu = (e) => {
     setAnchorElNav(null);
-    setLoading(true);
-    router.replace(pages[e.target.textContent]);
+    if (router.pathname !== pages[e.target.textContent]) {
+      setLoading(true);
+      router.replace(pages[e.target.textContent]);
+    }
   };
 
   const handleCloseUserMenu = (e) => {
