@@ -7,10 +7,10 @@ import {
   CssBaseline,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import FormInput from "../../components/inputs/formInput";
-import Validator from "../../utils/validator";
+import FormInput from "@/components/inputs/formInput";
+import Validator from "@/utils/validator";
 import Swal from "sweetalert2";
-import Messages from "../../utils/messages";
+import Messages from "@/utils/messages";
 import bcrypt from "bcryptjs";
 import { useRouter } from "next/router";
 import Avatar from "@mui/material/Avatar";
