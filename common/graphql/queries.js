@@ -1,7 +1,7 @@
 import { gql } from "graphql-request";
 
 export const RECIPES = gql`
-  query ($list: [String], $after: String) {
+  query ($list: [String]!, $after: String) {
     searchRecipesByIngredients(
       mustIngredients: $list
       first: 6

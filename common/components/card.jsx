@@ -34,12 +34,8 @@ const RecipeReviewCard = ({ recipe }) => {
       imageWidth: 400,
       imageHeight: 200,
       imageAlt: name,
-      showCancelButton: true,
-      confirmButtonText: "Save",
-    }).then((res) => {
-      if (res.isConfirmed) {
-        Swal.fire("Saved!", "", "success");
-      }
+      showConfirmButton: true,
+      confirmButtonText: "OK",
     });
   };
 

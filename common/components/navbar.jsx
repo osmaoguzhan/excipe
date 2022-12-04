@@ -7,19 +7,19 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import RamenDiningIcon from "@mui/icons-material/RamenDining";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useLoading } from "../contexts/loadingContext";
+import Notification from "./notification";
 
 const pages = {
   "My Fridge": "/fridge",
   Recipes: "/recipes",
 };
-const settings = ["Profile", "Logout"];
+const settings = ["Logout"];
 
 const Navbar = () => {
   const { data: session, status } = useSession();
@@ -151,22 +151,23 @@ const Navbar = () => {
             )}
 
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title='Open settings'>
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Box
-                    style={{
-                      borderRadius: "50%",
-                      width: "48px",
-                      height: "48px",
-                      backgroundColor: "gray",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}>
-                    {session?.user?.name.charAt(0)}
-                  </Box>
-                </IconButton>
-              </Tooltip>
+              <Notification hidden={!session} />
+              <IconButton
+                onClick={handleOpenUserMenu}
+                sx={{ p: 0, marginLeft: 1 }}>
+                <Box
+                  style={{
+                    borderRadius: "50%",
+                    width: "48px",
+                    height: "48px",
+                    backgroundColor: "gray",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}>
+                  {session?.user?.name.charAt(0)}
+                </Box>
+              </IconButton>
               <Menu
                 sx={{ mt: "45px" }}
                 id='menu-appbar'

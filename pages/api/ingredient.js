@@ -38,6 +38,7 @@ export default async function handler(req, res) {
             let diff = moment(ingredient.expiryDate).diff(today, "days");
             ingredient.status =
               diff > 3 ? "Fresh" : diff > 0 ? "Stale" : "Expired";
+            ingredient.daysLeft = diff;
           });
         }
         ingredients = exclude(ingredients, ["userId"]);
