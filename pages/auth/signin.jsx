@@ -14,7 +14,7 @@ const SignIn = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     const { ok, error } = await signIn("credentials", {
-      email: data.email,
+      nickname: data.nickname,
       password: data.password,
       redirect: false,
     });

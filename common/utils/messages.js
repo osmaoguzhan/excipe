@@ -5,7 +5,7 @@ const Messages = {
   error: {
     requiredFirstname: "First name is required.",
     requiredLastname: "Last name is required.",
-    requiredEmail: "Email is required.",
+    requiredNickname: "Nickname is required.",
     requiredPassword: "Password is required.",
     firstNameMinLength:
       "First Name should be minimum <<placeholder>> characters.",
@@ -15,7 +15,9 @@ const Messages = {
       "Last Name should be minimum <<placeholder>> characters.",
     lastNameMaxLength:
       "Last Name should be maximally <<placeholder>> characters.",
-    invalidEmail: "E-Mail format is invalid.",
+    nicknameMinLength: "Nickname should be minimum <<placeholder>> characters.",
+    nicknameMaxLength:
+      "Nickname should be maximally <<placeholder>> characters.",
     passwordMinLength: "Password should be minimum <<placeholder>> characters.",
     passwordMaxLength:
       "Password should be maximally <<placeholder>> characters.",

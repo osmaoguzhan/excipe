@@ -13,7 +13,6 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useLoading } from "../contexts/loadingContext";
-import Notification from "./notification";
 
 const pages = {
   "My Fridge": "/fridge",
@@ -151,7 +150,6 @@ const Navbar = () => {
             )}
 
             <Box sx={{ flexGrow: 0 }}>
-              <Notification hidden={!session} />
               <IconButton
                 onClick={handleOpenUserMenu}
                 sx={{ p: 0, marginLeft: 1 }}>

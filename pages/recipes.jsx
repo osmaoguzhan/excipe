@@ -3,7 +3,15 @@ import Head from "next/head";
 import Swal from "sweetalert2";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
-import { Button, Drawer, Badge, Fab, Grid, TextField } from "@mui/material";
+import {
+  Button,
+  Drawer,
+  Badge,
+  Fab,
+  Grid,
+  TextField,
+  Box,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import List from "@/components/list";
@@ -15,9 +23,10 @@ import useArray from "@/hooks/useArray";
 import useToggle from "@/hooks/useToggle";
 import { useLoading } from "@/contexts/loadingContext";
 import { requireAuth } from "@/utils/requireAuth";
+import Notification from "@/components/notification";
 
-const Recipes = () => {
-  const ingredients = useArray([]);
+const Recipes = ({ data, session, fridge }) => {
+  const ingredients = useArray(data ? [...data] : []);
   const [drawerState, toggleDrawer] = useToggle(false);
   const [value, setValue] = useState("");
   const [recipes, setRecipes] = useState([]);
@@ -68,11 +77,7 @@ const Recipes = () => {
       let newRecipes = data?.searchRecipesByIngredients?.edges.map(
         (recipe) => recipe.node
       );
-      if (scroll) {
-        setRecipes((prev) => [...prev, ...newRecipes]);
-      } else {
-        setRecipes(newRecipes);
-      }
+      setRecipes((prev) => [...prev, ...newRecipes]);
       setPageInfo((prev) => {
         return { ...prev, ...data?.searchRecipesByIngredients.pageInfo };
       });
@@ -86,7 +91,7 @@ const Recipes = () => {
   }, [ingredients.value]);
 
   return (
-    <div>
+    <Box component={"div"} sx={{ maxWidth: "100%", overflowX: "clip" }}>
       <Head>
         <title>Recipes</title>
         <meta name='viewport' content='initial-scale=1.0, width=device-width' />
@@ -190,15 +195,27 @@ const Recipes = () => {
           </Drawer>
         </>
       )}
-    </div>
+      <Notification
+        expiredInfo={fridge.filter((x) => x.status === "Expired")}
+      />
+    </Box>
   );
 };
 
 export const getServerSideProps = async (ctx) => {
-  return requireAuth(ctx, () => {
+  return requireAuth(ctx, async (session) => {
+    const { success, data } = await (
+      await fetch(`${process.env.NEXTAUTH_URL}/api/ingredient`, {
+        headers: {
+          userid: session._id,
+        },
+      })
+    ).json();
     return {
       props: {
-        data: null,
+        data: "ingredients" in ctx.query ? ctx.query.ingredients : null,
+        session: session,
+        fridge: success ? data : null,
       },
     };
   });

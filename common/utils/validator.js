@@ -43,14 +43,24 @@ const Validator = () => {
         ),
       },
     },
-    email: {
+    nickname: {
       required: {
         value: true,
-        message: Messages.error.requiredEmail,
+        message: Messages.error.requiredNickname,
       },
-      pattern: {
-        value: Constants.emailRegex,
-        message: Messages.error.invalidEmail,
+      minLength: {
+        value: Constants.nicknameMin,
+        message: Messages.error.nicknameMinLength.replace(
+          "<<placeholder>>",
+          Constants.nicknameMin.toString()
+        ),
+      },
+      maxLength: {
+        value: Constants.nicknameMax,
+        message: Messages.error.nicknameMaxLength.replace(
+          "<<placeholder>>",
+          Constants.nicknameMax.toString()
+        ),
       },
     },
     password: {

@@ -27,15 +27,21 @@ export default async function handler(req, res) {
     case "GET":
       try {
         const { userid } = req.headers;
+        if (!userid) {
+          res.status(400).json({
+            success: false,
+            message: "User id is required.",
+          });
+        }
         let ingredients = await prisma.ingredient.findMany({
           where: {
             userId: userid,
           },
         });
         if (ingredients) {
-          let today = new Date();
+          let today = moment();
           ingredients.forEach((ingredient) => {
-            let diff = moment(ingredient.expiryDate).diff(today, "days");
+            let diff = moment(ingredient.expiryDate).diff(today, "days", true);
             ingredient.status =
               diff > 3 ? "Fresh" : diff > 0 ? "Stale" : "Expired";
             ingredient.daysLeft = diff;
@@ -68,6 +74,29 @@ export default async function handler(req, res) {
         res.status(400).json({
           success: false,
           message: "Error while adding the ingredient.",
+        });
+      }
+      break;
+    case "PUT":
+      try {
+        let { id, name, expiryDate } = req.body;
+        console.log(id, name, expiryDate, "id, name, expiryDate");
+        let ingredient = await prisma.ingredient.update({
+          where: { id },
+          data: {
+            name,
+            expiryDate,
+          },
+        });
+        res.status(200).json({
+          success: true,
+          data: ingredient,
+          message: "Successfully updated.",
+        });
+      } catch (err) {
+        res.status(400).json({
+          success: false,
+          message: "Error while updating the ingredient.",
         });
       }
       break;

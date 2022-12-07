@@ -2,57 +2,34 @@ import { useState } from "react";
 import Head from "next/head";
 import * as _ from "lodash";
 import Swal from "sweetalert2";
-import moment from "moment";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Button, ButtonGroup, Container, lighten } from "@mui/material";
-import { Add, Delete, Edit } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Container,
+  lighten,
+  Fab,
+} from "@mui/material";
+import { Add, Delete, Edit, WbIncandescent } from "@mui/icons-material";
 import ModalForm from "@/components/forms/modalForm";
-import prisma from "@/lib/prisma";
 import { requireAuth } from "@/utils/requireAuth";
 import useArray from "@/hooks/useArray";
 import { useLoading } from "@/contexts/loadingContext";
 import Loading from "@/components/loading";
-import { exclude } from "@/utils/helpers";
-
-const columns = [
-  {
-    field: "id",
-    headerName: "ID",
-    width: 250,
-    align: "center",
-    headerAlign: "center",
-  },
-  {
-    field: "name",
-    headerName: "Ingredient",
-    width: 300,
-    editable: false,
-    align: "center",
-    headerAlign: "center",
-  },
-  {
-    field: "expiryDate",
-    headerName: "Expiry Date",
-    width: 275,
-    editable: false,
-    align: "center",
-    headerAlign: "center",
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    width: 275,
-    editable: false,
-    align: "center",
-    headerAlign: "center",
-  },
-];
+import Constants from "@/utils/constants";
+import { useRouter } from "next/router";
+import Notification from "@/components/notification";
 
 const Fridge = ({ ingredients, session }) => {
   const { isLoading, setLoading } = useLoading();
   const rows = useArray(ingredients);
-  const [isOpen, setOpen] = useState(false);
+  const [modalTrigger, setModalTrigger] = useState({
+    open: false,
+    handleCustomSubmit: (d) => addIngredient(d),
+  });
   const [selectedRows, setSelectedRows] = useState([]);
+  const router = useRouter();
 
   const getIngredients = async () => {
     const response = await (
@@ -73,39 +50,86 @@ const Fridge = ({ ingredients, session }) => {
       });
     }
   };
+  const redirectToRecipe = () => {
+    Swal.fire({
+      title: "Warning!",
+      text: "Once you click OK, you will be redirected to the recipe page. You may need to delete some ingredients to get a recipe.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "OK",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push({
+          pathname: "/recipes",
+          query: { ingredients: selectedRows.map((i) => i.name) },
+        });
+      }
+    });
+  };
+
+  const updateIngredient = async (data) => {
+    setLoading(true);
+    const response = await (
+      await fetch("/api/ingredient", {
+        headers: {
+          "Content-Type": "application/json",
+          userId: session._id,
+        },
+        method: "PUT",
+        body: JSON.stringify(data),
+      })
+    ).json();
+    if (response.success) {
+      Swal.fire({
+        title: "Success!",
+        text: response.message,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      getIngredients();
+    } else {
+      Swal.fire({
+        title: "Error!",
+        text: response.message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+    setModalTrigger((prev) => ({ ...prev, open: false }));
+    setLoading(false);
+  };
 
   const addIngredient = async (data) => {
     setLoading(true);
     data.id = session._id;
-    fetch("/api/ingredient", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify(data),
-    })
-      .then(async (res) => {
-        const { message, data } = await res.json();
-        Swal.fire({
-          title: "Success!",
-          text: message,
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-        getIngredients();
+    const response = await (
+      await fetch("/api/ingredient", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(data),
       })
-      .catch((err) => {
-        Swal.fire({
-          title: "Error!",
-          text: err.error,
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      })
-      .finally(() => {
-        setOpen(false);
-        setLoading(false);
+    ).json();
+    if (response.success) {
+      Swal.fire({
+        title: "Success!",
+        text: response.message,
+        icon: "success",
+        confirmButtonText: "OK",
       });
+      getIngredients();
+    } else {
+      Swal.fire({
+        title: "Error!",
+        text: response.message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+    setModalTrigger((prev) => ({ ...prev, open: false }));
+    setLoading(false);
   };
 
   const deleteItem = async () => {
@@ -143,7 +167,7 @@ const Fridge = ({ ingredients, session }) => {
   };
 
   return (
-    <>
+    <Box component={"div"} sx={{ overflowX: "clip" }}>
       <Head>
         <title>My Fridge</title>
         <meta name='viewport' content='initial-scale=1.0, width=device-width' />
@@ -154,19 +178,41 @@ const Fridge = ({ ingredients, session }) => {
         <Container
           maxWidth='lg'
           component={"main"}
-          style={{ height: "35em", width: "100%", marginTop: "10em" }}>
+          style={{ height: "35em", width: "100%", marginTop: "5em" }}>
           <ButtonGroup variant='text' aria-label='text button group'>
-            <Button startIcon={<Add />} onClick={() => setOpen(true)}>
-              Add New Ingredient
-            </Button>
+            {selectedRows.length === 0 && (
+              <Button
+                startIcon={<Add />}
+                onClick={() =>
+                  setModalTrigger({
+                    ...modalTrigger,
+                    open: true,
+                    handleCustomSubmit: addIngredient,
+                  })
+                }>
+                Add New Ingredient
+              </Button>
+            )}
             {selectedRows.length === 1 && (
-              <Button startIcon={<Edit />} onClick={() => setOpen(true)}>
+              <Button
+                startIcon={<Edit />}
+                onClick={() => {
+                  setModalTrigger({
+                    open: true,
+                    handleCustomSubmit: updateIngredient,
+                  });
+                }}>
                 Edit
               </Button>
             )}
             {selectedRows.length >= 1 && (
               <Button startIcon={<Delete />} onClick={deleteItem}>
                 Delete
+              </Button>
+            )}
+            {selectedRows.length >= 1 && (
+              <Button onClick={redirectToRecipe} startIcon={<WbIncandescent />}>
+                Suggest
               </Button>
             )}
           </ButtonGroup>
@@ -198,7 +244,7 @@ const Fridge = ({ ingredients, session }) => {
             <DataGrid
               getRowClassName={(params) => `theme-status-${params.row.status}`}
               rows={rows.value}
-              columns={columns}
+              columns={Constants.fridgeColumns}
               pageSize={10}
               rowsPerPageOptions={[10]}
               checkboxSelection
@@ -210,43 +256,46 @@ const Fridge = ({ ingredients, session }) => {
                 setSelectedRows(selected);
               }}
               selectionModel={selectedRows.map((item) => item["id"])}
-              onRowClick={(d) => {
-                console.log(d);
-              }}
+              // onRowClick={(d) => {
+              //   console.log(d);
+              // }}
             />
           </Box>
           <ModalForm
-            open={isOpen}
-            handleCustomSubmit={(d) => addIngredient(d)}
-            handleClose={() => setOpen(false)}
-            title={"Add New Ingredient"}
-            buttonNames={{ cancel: "Cancel", custom: "Save" }}
+            open={modalTrigger.open}
+            handleCustomSubmit={modalTrigger.handleCustomSubmit}
+            handleClose={() =>
+              setModalTrigger((prev) => {
+                return {
+                  ...prev,
+                  open: false,
+                };
+              })
+            }
+            id={selectedRows[0]?.id}
           />
         </Container>
       )}
-    </>
+      <Notification
+        expiredInfo={rows.value.filter((x) => x.status === "Expired")}
+      />
+    </Box>
   );
 };
 
 export const getServerSideProps = async (ctx) => {
   return requireAuth(ctx, async (session) => {
-    let ingredients = await prisma.ingredient.findMany({
-      where: {
-        userId: session._id,
-      },
-    });
-    if (ingredients) {
-      let today = new Date();
-      ingredients.forEach((ingredient) => {
-        let diff = moment(ingredient.expiryDate).diff(today, "days");
-        ingredient.status = diff > 3 ? "Fresh" : diff > 0 ? "Stale" : "Expired";
-      });
-    }
-    ingredients = exclude(ingredients, ["userId"]);
+    const { success, data } = await (
+      await fetch(`${process.env.NEXTAUTH_URL}/api/ingredient`, {
+        headers: {
+          userid: session._id,
+        },
+      })
+    ).json();
     return {
       props: {
         session: session,
-        ingredients: ingredients,
+        ingredients: success ? data : null,
       },
     };
   });

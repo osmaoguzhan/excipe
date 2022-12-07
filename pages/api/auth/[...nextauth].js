@@ -14,11 +14,9 @@ export const authOptions = {
       name: "Credentials",
       credentials: {},
       async authorize(credentials) {
-        let { email, password } = credentials;
+        let { nickname, password } = credentials;
         let user = await prisma.user.findUnique({
-          where: {
-            email: email,
-          },
+          where: { nickname },
         });
         if (!user) throw new Error("Please check your credentials.");
         let match = await bcrypt.compare(password, user.password);
@@ -29,14 +27,16 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async session({ session }) {
-      let sessionUser = await prisma.user.findUnique({
-        where: {
-          email: session.user.email,
-        },
-      });
-      session._id = sessionUser.id;
+    async session({ session, user, token }) {
+      session.user = token.user;
+      session._id = token.user.id;
       return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token["user"] = user;
+      }
+      return token;
     },
   },
   pages: {

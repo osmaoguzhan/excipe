@@ -1,26 +1,34 @@
 import {
-  Button,
-  CssBaseline,
+  Link,
   Grid,
   Box,
   Typography,
+  Button,
+  CssBaseline,
   InputAdornment,
   darken,
-} from "@mui/material/";
+} from "@mui/material";
+import FormInput from "@/components/inputs/formInput";
 import Avatar from "@mui/material/Avatar";
 import Paper from "@mui/material/Paper";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import FormInput from "@/components/inputs/formInput";
-import { useForm } from "react-hook-form";
-import Link from "next/link";
 import Constants from "@/utils/constants";
-import { useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import Validator from "@/utils/validator";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
-const SigninForm = ({ onSubmit }) => {
-  const { handleSubmit, control } = useForm();
+const SignupForm = ({ onSubmit }) => {
+  const rules = Validator();
   const [showPassword, setShowPassword] = useState(true);
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset,
+  } = useForm();
+
   return (
     <Grid container component='main' sx={{ height: "100vh" }}>
       <CssBaseline />
@@ -29,7 +37,6 @@ const SigninForm = ({ onSubmit }) => {
         xs={false}
         sm={4}
         md={7}
-        borderRadius={"3px"}
         sx={{
           backgroundImage: `url(${
             Constants.urls[Math.floor(Math.random() * Constants.urls.length)]
@@ -56,28 +63,39 @@ const SigninForm = ({ onSubmit }) => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component='h1' variant='h5'>
-            Sign in
+            Sign Up
           </Typography>
           <Box
             component='form'
-            noValidate
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit((d) => onSubmit(d))}
             sx={{ mt: 1 }}>
             <FormInput
-              required
-              id='nickname'
-              label='Nickname'
-              name='nickname'
-              autoComplete='nickname'
+              name={"name"}
+              label={"Name"}
               control={control}
+              errors={errors}
+              validation={rules.firstName}
             />
             <FormInput
-              required
-              name='password'
-              label='Password'
-              id='password'
-              autoComplete='current-password'
+              name={"surname"}
+              label={"Surname"}
               control={control}
+              errors={errors}
+              validation={rules.lastName}
+            />
+            <FormInput
+              name={"nickname"}
+              label={"Nickname"}
+              control={control}
+              errors={errors}
+              validation={rules.nickname}
+            />
+            <FormInput
+              name={"password"}
+              label={"Password"}
+              control={control}
+              errors={errors}
+              validation={rules.password}
               type={showPassword ? "password" : "text"}
               InputProps={{
                 endAdornment: (
@@ -96,19 +114,17 @@ const SigninForm = ({ onSubmit }) => {
               }}
             />
             <Button
-              type='submit'
+              type={"submit"}
               fullWidth
+              style={{ backgroundColor: "#8b9787" }}
               variant='contained'
               sx={{ mt: 3, mb: 2 }}
-              style={{ backgroundColor: "#8b9787" }}
               onClick={handleSubmit((d) => onSubmit(d))}>
-              Sign In
+              Sign Up
             </Button>
             <Grid container display={"flex"} justifyContent={"flex-end"}>
               <Grid item>
-                <Link href='/auth/signup'>
-                  {"Don't have an account? Sign Up"}
-                </Link>
+                <Link href='/auth/signin'>Already have an account?</Link>
               </Grid>
             </Grid>
           </Box>
@@ -118,4 +134,4 @@ const SigninForm = ({ onSubmit }) => {
   );
 };
 
-export default SigninForm;
+export default SignupForm;
