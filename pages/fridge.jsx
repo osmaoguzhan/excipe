@@ -63,7 +63,12 @@ const Fridge = ({ ingredients, session }) => {
       if (result.isConfirmed) {
         router.push({
           pathname: "/recipes",
-          query: { ingredients: selectedRows.map((i) => i.name) },
+          query: {
+            ingredients:
+              selectedRows.length === 1
+                ? selectedRows[0].name
+                : selectedRows.map((i) => i.name),
+          },
         });
       }
     });
