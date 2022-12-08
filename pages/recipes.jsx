@@ -27,7 +27,7 @@ import Notification from "@/components/notification";
 import { absoluteUrl } from "@/utils/helpers";
 
 const Recipes = ({ data, session, fridge }) => {
-  const ingredients = useArray(data ? [...data] : []);
+  const ingredients = useArray(data ?? []);
   const [drawerState, toggleDrawer] = useToggle(false);
   const [value, setValue] = useState("");
   const [recipes, setRecipes] = useState([]);
@@ -212,9 +212,17 @@ export const getServerSideProps = async (ctx) => {
         },
       })
     ).json();
+    let ingredients = [];
+    if ("ingredients" in ctx.query) {
+      if (Array.isArray(ctx.query.ingredients)) {
+        ingredients = ctx.query.ingredients;
+      } else {
+        ingredients.push(ctx.query.ingredients);
+      }
+    }
     return {
       props: {
-        data: "ingredients" in ctx.query ? ctx.query.ingredients : null,
+        data: ingredients.length > 0 ? ingredients : null,
         session: session,
         fridge: success ? data : null,
       },

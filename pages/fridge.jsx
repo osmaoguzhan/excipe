@@ -51,6 +51,7 @@ const Fridge = ({ ingredients, session }) => {
       });
     }
   };
+
   const redirectToRecipe = () => {
     Swal.fire({
       title: "Warning!",
@@ -64,10 +65,7 @@ const Fridge = ({ ingredients, session }) => {
         router.push({
           pathname: "/recipes",
           query: {
-            ingredients:
-              selectedRows.length === 1
-                ? selectedRows[0].name
-                : selectedRows.map((i) => i.name),
+            ingredients: selectedRows.map((i) => i.name),
           },
         });
       }
