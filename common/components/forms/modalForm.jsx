@@ -12,6 +12,7 @@ import FormInput from "../inputs/formInput";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import moment from "moment/moment";
+import { absoluteUrl } from "@/utils/helpers";
 
 const ModalForm = (props) => {
   const { open, handleCustomSubmit, handleClose, id } = props;
@@ -25,7 +26,7 @@ const ModalForm = (props) => {
   useEffect(() => {
     const getIngredientById = async (id) => {
       const response = await (
-        await fetch(`/api/ingredient/${id}`, {
+        await fetch(absoluteUrl(`/api/ingredient/${id}`), {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

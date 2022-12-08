@@ -20,6 +20,7 @@ import Loading from "@/components/loading";
 import Constants from "@/utils/constants";
 import { useRouter } from "next/router";
 import Notification from "@/components/notification";
+import { absoluteUrl } from "@/utils/helpers";
 
 const Fridge = ({ ingredients, session }) => {
   const { isLoading, setLoading } = useLoading();
@@ -33,7 +34,7 @@ const Fridge = ({ ingredients, session }) => {
 
   const getIngredients = async () => {
     const response = await (
-      await fetch("/api/ingredient", {
+      await fetch(absoluteUrl("/api/ingredient"), {
         headers: {
           userid: session._id,
         },
@@ -71,7 +72,7 @@ const Fridge = ({ ingredients, session }) => {
   const updateIngredient = async (data) => {
     setLoading(true);
     const response = await (
-      await fetch("/api/ingredient", {
+      await fetch(absoluteUrl("/api/ingredient"), {
         headers: {
           "Content-Type": "application/json",
           userId: session._id,
@@ -104,7 +105,7 @@ const Fridge = ({ ingredients, session }) => {
     setLoading(true);
     data.id = session._id;
     const response = await (
-      await fetch("/api/ingredient", {
+      await fetch(absoluteUrl("/api/ingredient"), {
         headers: {
           "Content-Type": "application/json",
         },
@@ -137,7 +138,7 @@ const Fridge = ({ ingredients, session }) => {
     let ids = selectedRows.map((item) => {
       return item["id"];
     });
-    const response = await fetch("/api/ingredient", {
+    const response = await fetch(absoluteUrl("/api/ingredient"), {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -286,7 +287,7 @@ const Fridge = ({ ingredients, session }) => {
 export const getServerSideProps = async (ctx) => {
   return requireAuth(ctx, async (session) => {
     const { success, data } = await (
-      await fetch(`${process.env.NEXTAUTH_URL}/api/ingredient`, {
+      await fetch(absoluteUrl("/api/ingredient"), {
         headers: {
           userid: session._id,
         },

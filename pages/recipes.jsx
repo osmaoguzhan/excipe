@@ -24,6 +24,7 @@ import useToggle from "@/hooks/useToggle";
 import { useLoading } from "@/contexts/loadingContext";
 import { requireAuth } from "@/utils/requireAuth";
 import Notification from "@/components/notification";
+import { absoluteUrl } from "@/utils/helpers";
 
 const Recipes = ({ data, session, fridge }) => {
   const ingredients = useArray(data ? [...data] : []);
@@ -205,7 +206,7 @@ const Recipes = ({ data, session, fridge }) => {
 export const getServerSideProps = async (ctx) => {
   return requireAuth(ctx, async (session) => {
     const { success, data } = await (
-      await fetch(`${process.env.NEXTAUTH_URL}/api/ingredient`, {
+      await fetch(absoluteUrl("/api/ingredient"), {
         headers: {
           userid: session._id,
         },

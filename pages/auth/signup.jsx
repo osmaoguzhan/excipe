@@ -4,12 +4,13 @@ import bcrypt from "bcryptjs";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import SignupForm from "@/components/forms/signupForm";
+import { absoluteUrl } from "@/utils/helpers";
 
 const SignUp = () => {
   const router = useRouter();
   const onSubmit = async (formData) => {
     formData.password = await bcrypt.hash(formData.password, 10);
-    fetch("/api/signup", {
+    fetch(absoluteUrl("/api/signup"), {
       headers: {
         "Content-Type": "application/json",
       },
